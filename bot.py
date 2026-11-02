@@ -1,7 +1,8 @@
 import os
 import aiohttp
 import discord
-import random
+import GifService
+import SimpleCommandsService as SCS
 from random import randint
 from discord.ext import tasks, commands
 
@@ -92,83 +93,17 @@ async def ping(ctx):
 @bot.command()
 async def mm(ctx):
     """Die magische Miesmuschel"""
-    randomNumber = randint(1,100)
-    
-    if(1 <= randomNumber <= 25):
-        await ctx.send("Ja!")
-    elif(26 <= randomNumber <= 50):
-        await ctx.send("Nein!")
-    elif(51 <= randomNumber <= 75):
-        await ctx.send("Vielleicht")
-    else:
-        await ctx.send("Frag mich nochmal in einer Stunde")
+    await SCS.getMM(ctx)
 
 @bot.command()
 async def cat(ctx):
     """Gibt ein Katzen Gif aus"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.giphy.com/v1/gifs/search",
-            params={
-            "api_key": GIPHY_API_KEY,
-            "q": "cat",
-            "limit": 50,
-            "rating": "pg-13",
-            },
-        ) as resp:
-            if resp.status != 200:
-                await ctx.send("GIF konnt nicht geladen werden :(")
-                return
-            data = await resp.json()
-    ergebnisse = data.get("data",[])
-    
-    if not ergebnisse:
-        await ctx.send("Keine Katzen gefunden")
-        return
-    
-    await ctx.send(random.choice(ergebnisse)["url"])
+    await GifService.getCatGif(ctx,GIPHY_API_KEY)
 
 @bot.command()
-async def night(ctx):
-    """Gint ein gute Nacht Gif aus"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.giphy.com/v1/gifs/search",
-            params={
-            "api_key": GIPHY_API_KEY,
-            "q": "good night",
-            "limit": 20,
-            "rating": "pg-13",
-            },
-        ) as resp:
-            if resp.status != 200:
-                await ctx.send("GIF konnt nicht geladen werden :(")
-                return
-            data = await resp.json()
-    ergebnisse = data.get("data",[])
-    
-    if not ergebnisse:
-        await ctx.send("Keine Gute Nacht gefunden")
-        return
-    
-    await ctx.send(random.choice(ergebnisse)["url"])
+async def gif(ctx,*,search):
+    await GifService.getGeneralGif(ctx,search,GIPHY_API_KEY)
+
+
 
 bot.run(DISCORD_TOKEN)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
