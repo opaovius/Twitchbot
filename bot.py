@@ -1,18 +1,21 @@
 import os
 import aiohttp
 import discord
-from discord.ext import tasks, commands
+import random
 from random import randint
+from discord.ext import tasks, commands
+
 
 DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
 CHANNEL_ID = int(os.environ["CHANNEL_ID"])
 TWITCH_CLIENT_ID = os.environ["TWITCH_CLIENT_ID"]
 TWITCH_CLIENT_SECRET = os.environ["TWITCH_CLIENT_SECRET"]
-STREAMER = os.environ["STREAMER"].lower()  # Twitch-Loginname
+STREAMER = os.environ["STREAMER"].lower()
+GIPHY_API_KEY = os.environ["GIPHY_API_KEY"]
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="?", intents=intents)
 
 twitch_token = None
 was_live = False
@@ -82,10 +85,13 @@ async def on_ready():
 
 @bot.command()
 async def ping(ctx):
+    """pong"""
     await ctx.send("pong")
+    
     
 @bot.command()
 async def mm(ctx):
+    """Die magische Miesmuschel"""
     randomNumber = randint(1,100)
     
     if(1 <= randomNumber <= 25):
@@ -97,5 +103,72 @@ async def mm(ctx):
     else:
         await ctx.send("Frag mich nochmal in einer Stunde")
 
+@bot.command()
+async def cat(ctx):
+    """Gibt ein Katzen Gif aus"""
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://api.giphy.com/v1/gifs/search",
+            params={
+            "api_key": GIPHY_API_KEY,
+            "q": "cat",
+            "limit": 50,
+            "rating": "pg-13",
+            },
+        ) as resp:
+            if resp.status != 200:
+                await ctx.send("GIF konnt nicht geladen werden :(")
+                return
+            data = await resp.json()
+    ergebnisse = data.get("data",[])
+    
+    if not ergebnisse:
+        await ctx.send("Keine Katzen gefunden")
+        return
+    
+    await ctx.send(random.choice(ergebnisse)["url"])
+
+@bot.command()
+async def night(ctx):
+    """Gint ein gute Nacht Gif aus"""
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://api.giphy.com/v1/gifs/search",
+            params={
+            "api_key": GIPHY_API_KEY,
+            "q": "good night",
+            "limit": 20,
+            "rating": "pg-13",
+            },
+        ) as resp:
+            if resp.status != 200:
+                await ctx.send("GIF konnt nicht geladen werden :(")
+                return
+            data = await resp.json()
+    ergebnisse = data.get("data",[])
+    
+    if not ergebnisse:
+        await ctx.send("Keine Gute Nacht gefunden")
+        return
+    
+    await ctx.send(random.choice(ergebnisse)["url"])
 
 bot.run(DISCORD_TOKEN)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
