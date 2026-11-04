@@ -3,7 +3,7 @@ import random
 from random import randint
 
 
-async def getCatGif(ctx,GIPHY_API_KEY):
+async def get_cat_gif(ctx,GIPHY_API_KEY):
     async with aiohttp.ClientSession() as session:
         async with session.get(
             "https://api.giphy.com/v1/gifs/search",
@@ -27,7 +27,7 @@ async def getCatGif(ctx,GIPHY_API_KEY):
     await ctx.send(random.choice(ergebnisse)["url"])
 
 
-async def getGeneralGif(ctx, suche, GIPHY_API_KEY):
+async def get_general_gif(ctx, suche, GIPHY_API_KEY):
     async with aiohttp.ClientSession() as session:
         async with session.get(
             "https://api.giphy.com/v1/gifs/search",
