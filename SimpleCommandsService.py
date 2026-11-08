@@ -1,4 +1,5 @@
 import random
+import aiohttp
 from random import randint
 
 
@@ -23,3 +24,13 @@ async def get_sleep_message(ctx):
                    ,"<:FoxBaeriiii:1459241885033037879>"]
 
     await ctx.send("Gute Nacht. " + random.choice(emote_array))
+
+async def get_random_facts(ctx):
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://uselessfacts.jsph.pl/api/v2/facts/random", params={"language": "de"}) as resp:
+            if resp.status != 200:
+                await ctx.send("Gerade kein Fakt verfügbar.")
+                return
+            data = await resp.json()
+    await ctx.send(data["text"])

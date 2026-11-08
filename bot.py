@@ -46,10 +46,17 @@ async def cat(ctx):
 
 @BOT.command()
 async def gif(ctx,*,search):
+    """Gibt ein passendes Gif aus: ?gif [Text]"""
     await GifService.get_general_gif(ctx,search,GIPHY_API_KEY)
 
 @BOT.command()
 async def sleep(ctx):
+    """Sendet eine gute Nacht Nachricht"""
     await SCS.get_sleep_message(ctx)
+
+@BOT.command()
+async def fact(ctx):
+    """Gibt einen Zufallsfakt aus"""
+    await SCS.get_random_facts(ctx)
 
 BOT.run(DISCORD_TOKEN)
